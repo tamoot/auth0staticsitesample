@@ -1,14 +1,14 @@
 'use strict';
 
 const APP_PATH = `/auth0staticsitesample`;
-let auth0 = null;
+let auth0Client = null;
 const fetchAuthConfig = () => fetch("auth_config.json"); // auth_config.json読み込み
 
 const configureClient = async () => {
   const response = await fetchAuthConfig();
   const config = await response.json();
 
-  auth0 = await auth0.createAuth0Client({
+  auth0Client = await auth0.createAuth0Client({
     domain: config.domain,
     client_id: config.clientId
   });
@@ -19,7 +19,7 @@ window.onload = async () => {
 
   updateUI();
 
-  const isAuthenticated = await auth0.isAuthenticated();
+  const isAuthenticated = await auth0Client.isAuthenticated();
 
   if (isAuthenticated) {
     // show the gated content
@@ -31,7 +31,7 @@ window.onload = async () => {
   if (query.includes("code=") && query.includes("state=")) {
 
     // Process the login state
-    await auth0.handleRedirectCallback();
+    await auth0Client.handleRedirectCallback();
     
     updateUI();
 
@@ -41,7 +41,7 @@ window.onload = async () => {
 };
 
 const updateUI = async () => { 
-  const isAuthenticated = await auth0.isAuthenticated();
+  const isAuthenticated = await auth0Client.isAuthenticated();
 
   document.getElementById("btn-logout").disabled = !isAuthenticated;
   document.getElementById("btn-login").disabled = isAuthenticated;
@@ -52,14 +52,14 @@ const updateUI = async () => {
 
     document.getElementById(
       "ipt-access-token"
-    ).innerHTML = await auth0.getTokenSilently();
+    ).innerHTML = await auth0Client.getTokenSilently();
 
     document.getElementById("ipt-user-profile").innerHTML = JSON.stringify(
-      await auth0.getUser()
+      await auth0Client.getUser()
     );
 
     //プロフ画像
-    const profile = await auth0.getUser();
+    const profile = await auth0Client.getUser();
     document.getElementById("ipt-user-profile-image").src = profile.picture;
 
   } else {
@@ -68,13 +68,13 @@ const updateUI = async () => {
 };
 
 const login = async () => {
-  await auth0.loginWithRedirect({
+  await auth0Client.loginWithRedirect({
     redirect_uri: window.location.origin + APP_PATH
   });
 };
 
 const logout = () => {
-  auth0.logout({
+  auth0Client.logout({
     returnTo: window.location.origin + APP_PATH
   });
 };
