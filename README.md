@@ -1,0 +1,2 @@
+# auth0staticsitesample
+Auth0のログインサンプル
