@@ -7,10 +7,10 @@ const fetchAuthConfig = () => fetch("auth_config.json"); // auth_config.jsonèª­ã
 const configureClient = async () => {
   const response = await fetchAuthConfig();
   const config = await response.json();
-  console.log(config);
+
   auth0Client = await auth0.createAuth0Client({
     domain: config.domain,
-    client_id: config.clientId
+    clientId: config.clientId
   });
 };
 
